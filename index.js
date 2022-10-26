@@ -5,6 +5,9 @@ const { Parser } = require("json2csv");
 const fs = require("fs");
 
 const apiKey = process.env.RESCUETIME_API_KEY;
+const startDate = process.env.START_DATE;
+const endDate = process.env.END_DATE;
+const outDir = process.env.OUTPUT_PATH;
 
 async function callRescueTimeAnalyticsApi(params) {
   params.key = apiKey;
@@ -94,10 +97,6 @@ async function getProductivityByHour(hourlyProductivity) {
 }
 
 async function main() {
-  const startDate = "2020-09-01";
-  const endDate = "2020-09-30";
-  const outDir = "./output";
-
   const secondsByCategory = await fetchHourlySummary(startDate, endDate).then(
     getSecondsSpentByCategory
   );
