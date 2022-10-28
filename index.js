@@ -9,6 +9,24 @@ const startDate = process.env.START_DATE;
 const endDate = process.env.END_DATE;
 const outDir = process.env.OUTPUT_PATH;
 
+const colMapping = {
+  Business: "business",
+  "Communication & Scheduling": "communication",
+  "Social Networking": "social",
+  "Design & Composition": "design",
+  Entertainment: "entertainment",
+  "News & Opinion": "news",
+  "Reference & Learning": "learning",
+  "Software Development": "development",
+  Shopping: "shopping",
+  Utilities: "utilities",
+  Personal: "personal",
+  "Other Work": "undefined",
+  "Focus Work": "focus",
+  Miscellaneous: "misc",
+  Uncategorized: "uncategorized",
+};
+
 async function callRescueTimeAnalyticsApi(params) {
   params.key = apiKey;
   params.format = "json";
@@ -62,7 +80,7 @@ async function getSecondsSpentByCategory(hourlySummary) {
     .mapValues((group) => {
       return _.chain(group)
         .map((obj) => ({
-          [obj["Category"]]: obj["Time Spent (seconds)"],
+          [colMapping[obj["Category"]]]: obj["Time Spent (seconds)"],
         }))
         .reduce(_.merge)
         .value();
@@ -100,13 +118,17 @@ async function main() {
   const secondsByCategory = await fetchHourlySummary(startDate, endDate).then(
     getSecondsSpentByCategory
   );
-  const secondsByProductivity = await fetchHourlyProductivity(
-    startDate,
-    endDate
-  ).then(getProductivityByHour);
+  // const secondsByProductivity = await fetchHourlyProductivity(
+  //   startDate,
+  //   endDate
+  // ).then(getProductivityByHour);
 
-  const merged = _.merge(secondsByCategory, secondsByProductivity);
-  const data = _.map(merged, function (value, key) {
+  // const merged = _.merge(secondsByCategory, secondsByProductivity);
+  // const data = _.map(merged, function (value, key) {
+  //   return { date: key, ...value };
+  // });
+
+  const data = _.map(secondsByCategory, function (value, key) {
     return { date: key, ...value };
   });
 
